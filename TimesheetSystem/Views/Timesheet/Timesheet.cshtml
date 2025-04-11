@@ -2,6 +2,54 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Enter your timesheet</h1>
+<div class="ui grid">
+    <div class="sixteen wide column">
+        <form class="ui form">
+            <div class="two fields">
+                <div class="field">
+                    <label>User name</label>
+                    <div class="ui selection dropdown">
+                        <input type="hidden">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Select user</div>
+                        <div class="menu">
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="field">
+                        <label>Date</label>
+                        <input type="text" id="dateOfBirth" class="ui calendar" placeholder="Select Date">
+                    </div>
+                </div>
+
+            </div>
+            <div class="two fields">
+
+                <div class="field">
+                    <div class="field">
+                        <label>Project</label>
+                        <input type="text" placeholder="Project">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="field">
+                        <label>Hours worked</label>
+                        <input type="text" id="dateOfBirth" class="ui calendar" placeholder="Hours worked">
+                    </div>
+                </div>
+
+            </div>
+                <div class="field">
+                    <div class="field">
+                        <label>Description</label>
+                    <textarea placeholder="Description"></textarea>
+                    </div>
+                </div>
+
+         
+            <button class="ui button" type="submit">Submit</button>
+        </form>
+    </div>
 </div>
