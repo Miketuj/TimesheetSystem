@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using TimesheetSystem.Models;
 using Microsoft.AspNetCore.Hosting;
 using TimesheetSystem.Functions;
+using System.Globalization;
+using Microsoft.AspNetCore.Rewrite;
+using System.Text.RegularExpressions;
 
 namespace TimesheetSystem.Controllers.Tests
 {
@@ -17,7 +20,7 @@ namespace TimesheetSystem.Controllers.Tests
     public class TimesheetTests
     {
         private TimesheetDB _context;
-        private TimeSheetController _controller;
+        private TimesheetController _controller;
         [OneTimeSetUp]
         public void SetUp()
         {
@@ -28,7 +31,7 @@ namespace TimesheetSystem.Controllers.Tests
             _context = new TimesheetDB(options);
 
             _context.Database.EnsureCreated();
-            _controller = new TimeSheetController(_context);
+            _controller = new TimesheetController(_context);
         }
         [OneTimeTearDown]
         public void TearDown()
@@ -40,9 +43,9 @@ namespace TimesheetSystem.Controllers.Tests
         [Test(), Order(1)]
         [TestCase(2, "John Smith")]
         [TestCase(2, "Jane Doe")]
-        public void DefaultUsersAddedTest(int count, string user)
+        public async Task DefaultUsersAddedTest(int count, string user)
         {
-            var users = _context.Users.ToList();
+            var users = await _context.Users.ToListAsync();
             Assert.That(users.Count, Is.EqualTo(count), $"Count is supposed to be {count}");
             Assert.IsTrue(users.Any(u => u.UserName == user), $"User {user} should be present.");
         }
@@ -51,9 +54,9 @@ namespace TimesheetSystem.Controllers.Tests
         [TestCase(1, "Jane")]
         [TestCase(5, "Paul")]
 
-        public void DefaultUsersAddedFailedTest(int count, string user)
+        public async Task DefaultUsersAddedFailedTest(int count, string user)
         {
-            var users = _context.Users.ToList();
+            var users = await _context.Users.ToListAsync();
             Assert.That(count, Is.Not.EqualTo(users.Count), $"Count is not supposed to be {count}");
             Assert.IsFalse(users.Any(u => u.UserName == user), $"User {user} should not be present.");
         }
@@ -61,9 +64,9 @@ namespace TimesheetSystem.Controllers.Tests
         [TestCase(5, "Project Alpha")]
         [TestCase(5, "Project Beta")]
         [TestCase(5, "Project Gamma")]
-        public void DefaultSheetsAddedTest(int count, string projectName)
+        public async Task DefaultSheetsAddedTest(int count, string projectName)
         {
-            var timesheets = _context.Timesheets.ToList();
+            var timesheets = await _context.Timesheets.ToListAsync();
             Assert.That(timesheets.Count, Is.EqualTo(count), $"Count is supposed to be {count}");
             Assert.IsTrue(timesheets.Any(u => u.Project == projectName), $"Project name {projectName} should be present.");
         }
@@ -73,16 +76,17 @@ namespace TimesheetSystem.Controllers.Tests
         [TestCase(1, "Beta")]
         [TestCase(0, "Gamma")]
 
-        public void DefaultSheetsFailedTest(int count, string projectName)
+        public async Task DefaultSheetsFailedTest(int count, string projectName)
         {
-            var timesheets = _context.Timesheets.ToList();
+            var timesheets = await _context.Timesheets.ToListAsync();
             Assert.That(count, Is.Not.EqualTo(timesheets.Count), $"Count is not supposed to be {count}");
             Assert.IsFalse(timesheets.Any(u => u.Project == projectName), $"Project name {projectName} should not be present.");
         }
         [Test(), Order(3)]
-        public void AddEntryTest()
+        public async Task AddEntryTest()
         {
-            var count = _context.Timesheets.ToList().Count + 1;
+            var originalSheets = await _context.Timesheets.ToListAsync();
+            var count = originalSheets.Count + 1;
 
             var entry = new TimesheetData()
             {
@@ -93,24 +97,50 @@ namespace TimesheetSystem.Controllers.Tests
                 Description = "Test description",
                 HoursWorked = 8,
             };
-           var result = _controller.AddEntry(entry);
+            var result = _controller.AddEntry(entry);
 
-            var timesheets = _context.Timesheets.ToList();
+            var timesheets = await _context.Timesheets.ToListAsync();
             Assert.That(count, Is.EqualTo(timesheets.Count), $"Count supposed to be {count}");
-            Assert.IsNotNull(timesheets.Find(c=>c.Id == entry.Id));
+            Assert.IsNotNull(timesheets.Find(c => c.Id == entry.Id));
 
         }
 
 
         [Test(), Order(4)]
 
-        public void ReturnCSVBytes()
+        public async Task ReturnCSVBytes()
         {
-            List<TimesheetData> timesheetData = new List<TimesheetData>();
+            var timesheets = await _context.Timesheets.ToListAsync();
+            var users = await _context.Users.ToListAsync();
+
+            var grouped = timesheets.GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
+            var timesheetData = new List<TimesheetDTO>();
+            foreach (var entries in grouped)
+            {
+                var totalHours = entries.Sum(c => c.HoursWorked);
+                var temp = entries.Select(c =>
+                new TimesheetDTO()
+                {
+                    UserName = c.UserData.UserName,
+                    Date = c.Date.ToString("dd/M/yyyy", CultureInfo.InvariantCulture),
+                    Project = c.Project,
+                    Description = c.Description,
+                    HoursWorked = c.HoursWorked,
+                    TotalHours = totalHours
+                });
+                timesheetData.AddRange(temp);
+            }
 
             var result = timesheetData.ReturnCSVBytes();
 
- 
+            var content = Encoding.UTF8.GetString(result);
+
+            var lines = content.Split('\n');
+            //Header & trailing row counted
+            Assert.IsTrue(lines.Length == timesheets.Count + 2);
+
+    
+
 
         }
         [Test(), Order(5)]
@@ -119,9 +149,30 @@ namespace TimesheetSystem.Controllers.Tests
             var timesheets = await _context.Timesheets.ToListAsync();
             var users = await _context.Users.ToListAsync();
 
-      
+            var grouped = timesheets.GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
+            var timesheetData = new List<TimesheetDTO>();
+            foreach (var entries in grouped)
+            {
+                var totalHours = entries.Sum(c => c.HoursWorked);
+                var userdailyEntries = entries.Select(c =>
+                new TimesheetDTO()
+                {
+                    UserName = c.UserData.UserName,
+                    Date = c.Date.ToString("dd/M/yyyy", CultureInfo.InvariantCulture),
+                    Project = c.Project,
+                    Description = c.Description,
+                    HoursWorked = c.HoursWorked,
+                    TotalHours = totalHours
+                });
+                timesheetData.AddRange(userdailyEntries);
+            }
 
-            Assert.Fail();
+
+            Assert.That(timesheets.Count, Is.EqualTo(timesheetData.Count));
+            foreach (var item in timesheetData)
+            {
+                Assert.That(item.TotalHours, Is.Not.EqualTo(0));
+            }
         }
 
 

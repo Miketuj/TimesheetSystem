@@ -7,11 +7,11 @@ using TimesheetSystem.Models;
 
 namespace TimesheetSystem.Controllers
 {
-    public class TimeSheetController : Controller
+    public class TimesheetController : Controller
     {
         private readonly TimesheetDB _context;
         //Timesheet form page
-        public TimeSheetController(TimesheetDB context)
+        public TimesheetController(TimesheetDB context)
         {
             _context = context;
         }
@@ -22,11 +22,11 @@ namespace TimesheetSystem.Controllers
         }
         //Add entry
         [HttpPost("entry/add")]
-        public IActionResult AddEntry(TimesheetData timesheet)
+        public IActionResult AddEntry(TimesheetData Timesheet)
         {
             try
             {
-                _context.Timesheets.Add(timesheet);
+                _context.Timesheets.Add(Timesheet);
                 _context.SaveChanges();
                 return Ok(new { StatusMessage = "Timesheet was added" });
             }
@@ -46,10 +46,10 @@ namespace TimesheetSystem.Controllers
         {
             try
             {
-                var timesheets = await _context.Timesheets.ToListAsync();
+                var Timesheets = await _context.Timesheets.ToListAsync();
                 var users = await _context.Users.ToListAsync();
-                var timesheetData = TimeSheetFunctions.ReturnTimesheetData(users, timesheets);
-                var bytes = timesheetData.ReturnCSVBytes();
+                var TimesheetData = TimesheetFunctions.ReturnTimesheetData(users, Timesheets);
+                var bytes = TimesheetData.ReturnCSVBytes();
 
                 return File(bytes, "text/csv", "users.csv");
             }
