@@ -10,33 +10,41 @@ namespace TimesheetSystem.Functions
     public static class TimesheetFunctions
     {
 
-        public static List<TimesheetDTO> ReturnTimesheetData(List<UserData> users, List<TimesheetData> Timesheets)
+        public static List<TimesheetDTO> ReturnTimesheetData(List<UserData> users, List<TimesheetData> timesheets)
         {
-            var TimesheetData = new List<TimesheetDTO>();
+            var grouped = timesheets.GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
+            var timesheetData = new List<TimesheetDTO>();
+            foreach (var entries in grouped)
+            {
+                var totalHours = entries.Sum(c => c.HoursWorked);
+                var userdailyEntries = entries.Select(c =>
+                new TimesheetDTO()
+                {
+                    UserName = c.UserData.UserName,
+                    Date = c.Date.ToString("dd/M/yyyy", CultureInfo.InvariantCulture),
+                    Project = c.Project,
+                    Description = c.Description,
+                    HoursWorked = c.HoursWorked,
+                    TotalHours = totalHours
+                });
+                timesheetData.AddRange(userdailyEntries);
+            }
 
-            //Timesheets groupby the userid
-            //Filter by the Date
-            //Count up the hours that specific day
-            
-            //Create a new Timesheet entity with the total hours of that day on there
-            //Match to a user, add the userName
-            //Add to TimesheetData
-
-            return TimesheetData;
+            return timesheetData;
         }
 
-        public static byte[] ReturnCSVBytes(this List<TimesheetDTO> TimesheetData)
+        public static byte[] ReturnCSVBytes(this List<TimesheetDTO> timesheetData)
         {
             var csv = new StringBuilder();
             csv.AppendLine("User Name,Date, Project, Description of Tasks, Hours Worked, Total Hours for the Day");
 
-            foreach (var Timesheet in TimesheetData)
+            foreach (var timesheet in timesheetData)
             {
-                csv.AppendLine($"{Timesheet.UserName}," +
-                    $"{Timesheet.Date}," +
-                    $"{Timesheet.Description}," +
-                    $"{Timesheet.HoursWorked}," +
-                    $"{Timesheet.TotalHours}");
+                csv.AppendLine($"{timesheet.UserName}," +
+                    $"{timesheet.Date}," +
+                    $"{timesheet.Description}," +
+                    $"{timesheet.HoursWorked}," +
+                    $"{timesheet.TotalHours}");
             }
 
             return Encoding.UTF8.GetBytes(csv.ToString());

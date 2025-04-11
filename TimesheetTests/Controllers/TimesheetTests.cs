@@ -108,39 +108,45 @@ namespace TimesheetSystem.Controllers.Tests
 
         [Test(), Order(4)]
 
-        public async Task ReturnCSVBytes()
+        public void ReturnCSVBytes()
         {
-            var timesheets = await _context.Timesheets.ToListAsync();
-            var users = await _context.Users.ToListAsync();
-
-            var grouped = timesheets.GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
-            var timesheetData = new List<TimesheetDTO>();
-            foreach (var entries in grouped)
+            var timesheetData = new List<TimesheetDTO>() 
             {
-                var totalHours = entries.Sum(c => c.HoursWorked);
-                var temp = entries.Select(c =>
-                new TimesheetDTO()
-                {
-                    UserName = c.UserData.UserName,
-                    Date = c.Date.ToString("dd/M/yyyy", CultureInfo.InvariantCulture),
-                    Project = c.Project,
-                    Description = c.Description,
-                    HoursWorked = c.HoursWorked,
-                    TotalHours = totalHours
-                });
-                timesheetData.AddRange(temp);
-            }
-
+                   new TimesheetDTO()
+                    {
+                        UserName = "TEST",
+                        Date = "11/04/2025",
+                        Project = "Project",
+                        Description = "Description",
+                        HoursWorked = 4,
+                        TotalHours = 8
+                    },
+                   new TimesheetDTO()
+                    {
+                        UserName = "TEST",
+                        Date = "11/04/2025",
+                        Project = "Project2",
+                        Description = "Description2",
+                        HoursWorked = 4,
+                        TotalHours = 8
+                    },
+                     new TimesheetDTO()
+                    {
+                        UserName = "TEST2",
+                        Date = "11/04/2025",
+                        Project = "Project2",
+                        Description = "Description2",
+                        HoursWorked = 4,
+                        TotalHours = 4
+                    },
+            };
             var result = timesheetData.ReturnCSVBytes();
 
             var content = Encoding.UTF8.GetString(result);
 
             var lines = content.Split('\n');
             //Header & trailing row counted
-            Assert.IsTrue(lines.Length == timesheets.Count + 2);
-
-    
-
+            Assert.IsTrue(lines.Length == timesheetData.Count + 2);
 
         }
         [Test(), Order(5)]
@@ -149,27 +155,10 @@ namespace TimesheetSystem.Controllers.Tests
             var timesheets = await _context.Timesheets.ToListAsync();
             var users = await _context.Users.ToListAsync();
 
-            var grouped = timesheets.GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
-            var timesheetData = new List<TimesheetDTO>();
-            foreach (var entries in grouped)
-            {
-                var totalHours = entries.Sum(c => c.HoursWorked);
-                var userdailyEntries = entries.Select(c =>
-                new TimesheetDTO()
-                {
-                    UserName = c.UserData.UserName,
-                    Date = c.Date.ToString("dd/M/yyyy", CultureInfo.InvariantCulture),
-                    Project = c.Project,
-                    Description = c.Description,
-                    HoursWorked = c.HoursWorked,
-                    TotalHours = totalHours
-                });
-                timesheetData.AddRange(userdailyEntries);
-            }
+            var result = TimesheetFunctions.ReturnTimesheetData(users, timesheets);
 
-
-            Assert.That(timesheets.Count, Is.EqualTo(timesheetData.Count));
-            foreach (var item in timesheetData)
+            Assert.That(timesheets.Count, Is.EqualTo(result.Count));
+            foreach (var item in result)
             {
                 Assert.That(item.TotalHours, Is.Not.EqualTo(0));
             }
