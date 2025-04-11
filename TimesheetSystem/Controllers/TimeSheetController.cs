@@ -10,7 +10,6 @@ namespace TimesheetSystem.Controllers
     public class TimesheetController : Controller
     {
         private readonly TimesheetDB _context;
-        //Timesheet form page
         public TimesheetController(TimesheetDB context)
         {
             _context = context;
@@ -18,30 +17,25 @@ namespace TimesheetSystem.Controllers
 
         public IActionResult Timesheet()
         {
+            ViewBag.Users = _context.Users;
             return View();
         }
-        //Add entry
         [HttpPost("entry/add")]
-        public IActionResult AddEntry(TimesheetData Timesheet)
+        public IActionResult AddEntry(TimesheetData timesheet)
         {
             try
             {
-                _context.Timesheets.Add(Timesheet);
+                _context.Timesheets.Add(timesheet);
                 _context.SaveChanges();
                 return Ok(new { StatusMessage = "Timesheet was added" });
             }
             catch (Exception)
             {
-
                 return BadRequest(new { StatusMessage = "There was an error" });
-
             }
-
         }
 
-        //Download report
-
-        [HttpPost("download/csv")]
+        [HttpGet("download/csv")]
         public async Task<IActionResult> DownloadEntries()
         {
             try
@@ -50,8 +44,8 @@ namespace TimesheetSystem.Controllers
                 var users = await _context.Users.ToListAsync();
                 var TimesheetData = TimesheetFunctions.ReturnTimesheetData(users, Timesheets);
                 var bytes = TimesheetData.ReturnCSVBytes();
-
-                return File(bytes, "text/csv", "users.csv");
+                var test = File(bytes, "text/csv", "timesheets.csv");
+                return test;
             }
             catch (Exception)
             {

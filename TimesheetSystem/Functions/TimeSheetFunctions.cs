@@ -12,7 +12,7 @@ namespace TimesheetSystem.Functions
 
         public static List<TimesheetDTO> ReturnTimesheetData(List<UserData> users, List<TimesheetData> timesheets)
         {
-            var grouped = timesheets.GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
+            var grouped = timesheets.OrderBy(c=>c.Date).GroupBy(c => new { c.Date.Date, c.UserID }).ToList();
             var timesheetData = new List<TimesheetDTO>();
             foreach (var entries in grouped)
             {
@@ -29,7 +29,6 @@ namespace TimesheetSystem.Functions
                 });
                 timesheetData.AddRange(userdailyEntries);
             }
-
             return timesheetData;
         }
 
@@ -42,6 +41,7 @@ namespace TimesheetSystem.Functions
             {
                 csv.AppendLine($"{timesheet.UserName}," +
                     $"{timesheet.Date}," +
+                    $"{timesheet.Project}," +
                     $"{timesheet.Description}," +
                     $"{timesheet.HoursWorked}," +
                     $"{timesheet.TotalHours}");

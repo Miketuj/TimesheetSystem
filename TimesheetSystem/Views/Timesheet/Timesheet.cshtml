@@ -4,52 +4,66 @@
 
 <div class="ui grid">
     <div class="sixteen wide column">
-        <form class="ui form">
+        <div class="ui form">
             <div class="two fields">
-                <div class="field">
-                    <label>User name</label>
+                <div class="field" >
+                    <label>User name
+                        <span></span>
+                    </label>
                     <div class="ui selection dropdown">
-                        <input type="hidden">
+                        <input type="hidden" id="username" data-check>
                         <i class="dropdown icon"></i>
                         <div class="default text">Select user</div>
                         <div class="menu">
+                            @foreach (var item in ViewBag.Users)
+                            {
+                                <a class="item" id="@item.Id" > @item.UserName</a>                                
+                            }
                         </div>
                     </div>
                 </div>
-                <div class="field">
+                <div class="field" >
                     <div class="field">
-                        <label>Date</label>
-                        <input type="text" id="dateOfBirth" class="ui calendar" placeholder="Select Date">
+                        <label>Date
+                            <span></span>
+                        </label>
+                        <input type="text" id="dateOfBirth" class="ui calendar" placeholder="Select Date" data-check>
                     </div>
                 </div>
 
             </div>
             <div class="two fields">
 
-                <div class="field">
+                <div class="field" >
                     <div class="field">
-                        <label>Project</label>
-                        <input type="text" placeholder="Project">
+                        <label>Project
+                            <span></span>
+                        </label>
+                        <input type="text" placeholder="Project" id="project" data-check>
                     </div>
                 </div>
 
                 <div class="field">
                     <div class="field">
-                        <label>Hours worked</label>
-                        <input type="text" id="dateOfBirth" class="ui calendar" placeholder="Hours worked">
+                        <label>Hours worked
+                            <span></span>
+                        </label>
+                        <input type="text" id="hoursworked" placeholder="Hours worked" data-check>
                     </div>
                 </div>
 
             </div>
-                <div class="field">
+            <div class="field">
                     <div class="field">
-                        <label>Description</label>
-                    <textarea placeholder="Description"></textarea>
+                        <label>Description
+                        <span></span>
+                        </label>
+                    <textarea placeholder="Description" id="description" data-check></textarea>
                     </div>
                 </div>
 
          
-            <button class="ui button" type="submit">Submit</button>
-        </form>
+            <button class="ui button" type="submit" id="submit">Submit</button>
+        </div>
     </div>
 </div>
