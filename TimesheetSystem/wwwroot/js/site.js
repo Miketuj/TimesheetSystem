@@ -6,17 +6,22 @@
     downloadCSV();
 
     $('.ui.dropdown').dropdown();
-
+    $("#datepicker").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        maxDate: 0
+    });
 }(jQuery));
 
 function submitTimeForm() {
     $("#submit").off('click').on("click", function () {
-        checkFormFields() 
+        checkFormFields()
 
         if ($('.error').length == 0) {
             var entry = {
                 UserID: $('.dropdown').find('.menu').find('.item.selected').attr('id'),
-                Date: Date.now,
+                Date: $("#datepicker").val(),
                 Project: $('#project').val(),
                 HoursWorked: $('#hoursworked').val(),
                 Description: $('#description').val(),
@@ -46,15 +51,25 @@ function checkFormFields() {
     inputs.each(function () {
         var field = $(this).closest('.field');
         if ($(this).val() == undefined || $(this).val() == "") {
-           
+
             field.addClass('error')
             field.find('span').html('Field required')
         } else {
             field.removeClass('error')
             field.find('span').html('')
         }
-       
+
     })
+    var hoursField = $('#hoursworked').closest('.field');
+    var hoursWorked = parseInt($('#hoursworked').val())
+    if (!$.isNumeric(hoursWorked)) {
+        hoursField.addClass('error')
+        hoursField.find('span').html('Must be a number')
+    } else {
+        hoursField.removeClass('error')
+        hoursField.find('span').html('')
+    }
+
 }
 function downloadCSV() {
     $("#download").off('click').on("click", function (e) {

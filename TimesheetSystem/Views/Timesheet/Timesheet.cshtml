@@ -2,12 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="ui grid">
+<div class="ui grid" data-timeform>
     <div class="sixteen wide column">
-        <div class="ui form">
+       
+        <div class="ui form formcard">
+            <h3 class="ui center aligned header">Submit your timesheet</h3>
             <div class="two fields">
-                <div class="field" >
-                    <label>User name
+                <div class="field">
+                    <label>
+                        User name
                         <span></span>
                     </label>
                     <div class="ui selection dropdown">
@@ -17,53 +20,49 @@
                         <div class="menu">
                             @foreach (var item in ViewBag.Users)
                             {
-                                <a class="item" id="@item.Id" > @item.UserName</a>                                
+                                <a class="item" id="@item.Id"> @item.UserName</a>
                             }
                         </div>
                     </div>
                 </div>
-                <div class="field" >
-                    <div class="field">
-                        <label>Date
-                            <span></span>
-                        </label>
-                        <input type="text" id="dateOfBirth" class="ui calendar" placeholder="Select Date" data-check>
-                    </div>
+                <div class="field">
+                    <label>
+                        Date
+                        <span></span>
+                    </label>
+                    <input type="text" id="datepicker" class="ui calendar" placeholder="Select Date" data-check>
                 </div>
 
             </div>
             <div class="two fields">
 
-                <div class="field" >
                     <div class="field">
-                        <label>Project
+                        <label>
+                            Project
                             <span></span>
                         </label>
                         <input type="text" placeholder="Project" id="project" data-check>
                     </div>
-                </div>
 
-                <div class="field">
                     <div class="field">
-                        <label>Hours worked
+                        <label>
+                            Hours worked
                             <span></span>
                         </label>
                         <input type="text" id="hoursworked" placeholder="Hours worked" data-check>
                     </div>
-                </div>
 
             </div>
-            <div class="field">
-                    <div class="field">
-                        <label>Description
+                <div class="field">
+                    <label>
+                        Description
                         <span></span>
-                        </label>
+                    </label>
                     <textarea placeholder="Description" id="description" data-check></textarea>
-                    </div>
                 </div>
 
-         
-            <button class="ui button" type="submit" id="submit">Submit</button>
+            <button class="ui primary submit button float-end" type="submit" id="submit">Submit</button>
+            <button class="ui clear button">Clear</button>
         </div>
     </div>
 </div>

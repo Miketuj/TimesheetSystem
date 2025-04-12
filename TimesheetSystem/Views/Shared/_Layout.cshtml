@@ -5,18 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TimesheetSystem</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.1/dist/semantic.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TimesheetSystem.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="ui menu">
+    <div class="ui menu" data-header>
         <div class="header item">
-            Timesheet
+            <img class="ui mini circular image" src="/images/image.png">
+
+        </div>
+        <div class="item">
+            <a class="ui primary button" href="/Timesheet/Timesheet">Timesheet</a>
         </div>
         <div class="right menu">
-            <a class="item" id="download">
-                Download report
-            </a>
+            <div class="item">
+                <a class="ui primary button" id="download">Download report</a>
+            </div>
+
         </div>
 
 
@@ -29,6 +35,7 @@
     <footer class="border-top footer text-muted">
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <script src="~/js/site.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.1/dist/semantic.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

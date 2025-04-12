@@ -1,25 +1,62 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #EDEDED
 }
-span{
-    float:right;
+
+label span {
+    float: right;
+}
+
+[data-timeform] {
+    margin-top: 32px !important;
+}
+
+[data-header] {
+    background-color: #3F8F27 !important
+}
+
+    [data-header] .item {
+        color: #FFFFFF !important;
+        border: none !important;
+    }
+
+        [data-header] .item:before {
+            background: none !important;
+        }
+
+.formcard {
+    background: #fafafa !important;
+    color: #101d42;
+    padding: 5vh;
+    border-radius: 1vw;
+}
+
+.label
+.header {
+    color: #707070 !important;
+}
+
+input,
+.selection,
+textarea {
+    border: 3px solid #EDEDED !important
 }
