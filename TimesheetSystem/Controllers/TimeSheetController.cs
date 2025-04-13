@@ -27,11 +27,11 @@ namespace TimesheetSystem.Controllers
             {
                 _context.Timesheets.Add(timesheet);
                 _context.SaveChanges();
-                return Ok(new { StatusMessage = "Timesheet was added" });
+                return Ok(new { StatusMessage = "Your timesheet has been submitted" });
             }
             catch (Exception)
             {
-                return BadRequest(new { StatusMessage = "There was an error" });
+                return BadRequest(new { StatusMessage = "There was an error adding your entry" });
             }
         }
 

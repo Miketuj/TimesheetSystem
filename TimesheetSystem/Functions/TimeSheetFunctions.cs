@@ -35,7 +35,7 @@ namespace TimesheetSystem.Functions
         public static byte[] ReturnCSVBytes(this List<TimesheetDTO> timesheetData)
         {
             var csv = new StringBuilder();
-            csv.AppendLine("User Name,Date, Project, Description of Tasks, Hours Worked, Total Hours for the Day");
+            csv.AppendLine("User Name,Date,Project,Description of Tasks,Hours Worked,Total Hours for the Day");
 
             foreach (var timesheet in timesheetData)
             {

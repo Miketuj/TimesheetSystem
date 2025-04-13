@@ -12,10 +12,13 @@
         dateFormat: "dd/mm/yy",
         maxDate: 0
     });
+    clearForm()
 }(jQuery));
 
 function submitTimeForm() {
     $("#submit").off('click').on("click", function () {
+
+        $('.form').addClass('loading');
         checkFormFields()
 
         if ($('.error').length == 0) {
@@ -32,18 +35,37 @@ function submitTimeForm() {
                 type: 'POST',
                 data: entry,
                 success: function (response) {
-                    console.log(response)
-                    //Clear form
-                    //Show message to say uploaded successfully
+                    $('[data-formfeedback]').html(response.statusMessage)
+                    $('.form').form('clear')
+                    removeLoading()
+                    
                 },
                 error: function (xhr, status, error) {
-                    alert("An error occurred: " + error);
+                    $('[data-formfeedback]').html("There was an error adding your entry")
+                    removeLoading()
                 }
             });
         } else {
-            //do nothing
+            removeLoading()
         }
+
     });
+}
+function clearForm() {
+    $("#clear").off('click').on("click", function () {
+        $('.form').form('clear')
+    });
+}
+function removeLoading() {
+    $('.form').removeClass('loading');
+}
+function addFieldErrors(field, message) {
+    field.addClass('error')
+    field.find('span').html(message)
+}
+function removeFieldErrors(field) {
+    field.removeClass('error')
+    field.find('span').html('')
 }
 function checkFormFields() {
     var inputs = $('[data-check]');
@@ -51,23 +73,18 @@ function checkFormFields() {
     inputs.each(function () {
         var field = $(this).closest('.field');
         if ($(this).val() == undefined || $(this).val() == "") {
-
-            field.addClass('error')
-            field.find('span').html('Field required')
+            addFieldErrors(field, 'Field required')
         } else {
-            field.removeClass('error')
-            field.find('span').html('')
+            removeFieldErrors(field)
         }
 
     })
     var hoursField = $('#hoursworked').closest('.field');
     var hoursWorked = parseInt($('#hoursworked').val())
     if (!$.isNumeric(hoursWorked)) {
-        hoursField.addClass('error')
-        hoursField.find('span').html('Must be a number')
+        addFieldErrors(hoursField, 'Must be a number')
     } else {
-        hoursField.removeClass('error')
-        hoursField.find('span').html('')
+        removeFieldErrors(hoursField)
     }
 
 }

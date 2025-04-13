@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TimesheetSystem.Models
 {
-    //Add list of users on DB set up with a uniqueID to filter the total hours
     public class TimesheetDTO
     {
         public string Date { get; set; } = string.Empty;

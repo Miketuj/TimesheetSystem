@@ -144,12 +144,32 @@ namespace TimesheetSystem.Controllers.Tests
 
             var content = Encoding.UTF8.GetString(result);
 
-            var lines = content.Split('\n');
-            //Header & trailing row counted
-            Assert.IsTrue(lines.Length == timesheetData.Count + 2);
+            var lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            
+            Assert.IsTrue(lines.Length == timesheetData.Count + 1);
 
-            //Add in some extra asserts as first run of downloading csv, one column was missing so get better test coverage
+            var rows = new List<string[]>();
 
+            foreach (var line in lines)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    rows.Add(line.Trim().Split(',')); 
+                }
+            }
+            Assert.That(rows[0][0], Is.EqualTo("User Name"));
+            Assert.That(rows[0][1], Is.EqualTo("Date"));
+            Assert.That(rows[0][2], Is.EqualTo("Project"));
+            Assert.That(rows[0][3], Is.EqualTo("Description of Tasks"));
+            Assert.That(rows[0][4], Is.EqualTo("Hours Worked"));
+            Assert.That(rows[0][5], Is.EqualTo("Total Hours for the Day"));
+
+            Assert.That(rows[1][0], Is.Not.Null);
+            Assert.That(rows[1][1], Is.Not.Null);
+            Assert.That(rows[1][2], Is.Not.Null);
+            Assert.That(rows[1][3], Is.Not.Null);
+            Assert.That(rows[1][4], Is.Not.Null);
+            Assert.That(rows[1][5], Is.Not.Null);
         }
         [Test(), Order(5)]
         public async Task ReturnTimesheetDataTest()
